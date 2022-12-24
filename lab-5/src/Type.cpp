@@ -24,7 +24,11 @@ std::string VoidType::toStr()
 std::string FunctionType::toStr()
 {
     std::ostringstream buffer;
-    buffer << returnType->toStr() << "()";
+    buffer << returnType->toStr() << "(";
+    for(auto& i:paramsType){
+        buffer<<i->toStr()<<", ";
+    }
+    buffer<<")";
     return buffer.str();
 }
 std::string PointerType::toStr()
