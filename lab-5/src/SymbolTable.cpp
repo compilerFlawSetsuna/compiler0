@@ -49,10 +49,10 @@ SymbolTable::SymbolTable()
     funcType = new FunctionType(TypeSystem::intType,{});
     std::string s = "getint";
     symbolTable[s]=new IdentifierSymbolEntry(funcType, s.c_str(), identifiers->getLevel());
-    funcType = new FunctionType(TypeSystem::intType,{});
+    funcType = new FunctionType(TypeSystem::intType,{TypeSystem::intType});
     s = "putint";
     symbolTable[s]=new IdentifierSymbolEntry(funcType, s.c_str(), identifiers->getLevel());
-    funcType = new FunctionType(TypeSystem::intType,{});
+    funcType = new FunctionType(TypeSystem::intType,{TypeSystem::intType});
     s = "putch";
     symbolTable[s]=new IdentifierSymbolEntry(funcType, s.c_str(), identifiers->getLevel());
     funcType = new FunctionType(TypeSystem::intType,{});
@@ -61,7 +61,6 @@ SymbolTable::SymbolTable()
     prev = nullptr;
     level = 0;
 }
-
 SymbolTable::SymbolTable(SymbolTable *prev)
 {
     this->prev = prev;
