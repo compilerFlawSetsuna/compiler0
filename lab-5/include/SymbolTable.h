@@ -145,4 +145,5 @@ public:
 extern SymbolTable *identifiers;
 extern SymbolTable *globals;
 extern Type *blockType;
+extern bool ifReturn;
 #endif

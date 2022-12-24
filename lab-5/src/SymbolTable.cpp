@@ -100,6 +100,7 @@ void SymbolTable::install(std::string name, SymbolEntry* entry)
     auto iter=this->symbolTable.find(name);
     if(iter!=this->symbolTable.end()){
         fprintf(stderr, "identifier \"%s\" already exist\n", name.c_str());
+        exit(EXIT_FAILURE);
     }
     symbolTable[name] = entry;
 }
@@ -109,3 +110,4 @@ static SymbolTable t;
 SymbolTable *identifiers = &t;
 SymbolTable *globals = &t;
 Type* blockType=nullptr;
+bool ifReturn=false;

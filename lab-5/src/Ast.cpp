@@ -358,9 +358,14 @@ void Ast::typeCheck()
 
 void FunctionDef::typeCheck()
 {
-    // Todo
     blockType=(dynamic_cast<FunctionType*>(se->getType()))->getRetType();
+    if(blockType!=TypeSystem::voidType)ifReturn=false;
+    else ifReturn=true;
     stmt->typeCheck();
+    if(ifReturn==false){
+        fprintf(stderr,"no return");
+        exit(EXIT_FAILURE);
+    }
     blockType=nullptr;
 }
 
@@ -481,6 +486,7 @@ void WhileStmt::typeCheck()
 
 void ReturnStmt::typeCheck()
 {
+    ifReturn=true;
     if(retValue!=nullptr)retValue->typeCheck();
     if(retValue==nullptr){
         if(blockType->toStr()!=TypeSystem::voidType->toStr()){
