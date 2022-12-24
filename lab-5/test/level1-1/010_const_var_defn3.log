@@ -1,0 +1,4 @@
+test/level1-1/010_const_var_defn3.ll:1:1: error: expected top-level entity
+program
+^
+1 error generated.

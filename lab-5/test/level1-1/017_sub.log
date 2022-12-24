@@ -1,0 +1,4 @@
+test/level1-1/017_sub.ll:1:1: error: expected top-level entity
+program
+^
+1 error generated.

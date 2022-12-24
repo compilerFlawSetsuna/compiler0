@@ -30,7 +30,7 @@ public:
     static void setIRBuilder(IRBuilder*ib) {builder = ib;};
     virtual void output(int level) = 0;
     virtual void typeCheck() = 0;
-    //virtual void genCode() = 0;
+    virtual void genCode() = 0;
     std::vector<Instruction*>& trueList() {return true_list;}
     std::vector<Instruction*>& falseList() {return false_list;}
 };
@@ -56,7 +56,7 @@ public:
     BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 class UnaryExpr : public ExprNode
 {
@@ -68,17 +68,17 @@ public:
     UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se),op(op),expr1(expr1){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 class PrimaryExp : public ExprNode
 {
 private :
      ExprNode *expr1;
 public :
-     PrimaryExp(SymbolEntry *se,ExprNode* expr1):ExprNode(se),expr1(expr1){};
-     void output(int level);
-     void typeCheck();
-     //void genCode();
+    PrimaryExp(SymbolEntry *se,ExprNode* expr1):ExprNode(se),expr1(expr1){};
+    void output(int level);
+    void typeCheck();
+    void genCode();
 };
 
 class FuncUseExpr : public ExprNode
@@ -89,8 +89,8 @@ public:
     FuncUseExpr(SymbolEntry *se, ExprNode*funcName, ExprNode* funcRParams):  ExprNode(se),funcName(funcName), funcRParams(funcRParams){};
     FuncUseExpr(SymbolEntry *se, ExprNode*funcName): ExprNode(se),funcName(funcName),funcRParams(nullptr){};
     void output(int level);
-     void typeCheck();
-     //void genCode();
+    void typeCheck();
+    void genCode();
 };
 
 class FuncRParams: public ExprNode
@@ -100,8 +100,8 @@ private:
 public:
     FuncRParams(SymbolEntry *se,ExprNode *expr1,ExprNode* funcRParams): ExprNode(se),expr1(expr1),funcRParams(funcRParams){};
     void output(int level);
-     void typeCheck();
-     //void genCode();
+    void typeCheck();
+    void genCode();
 };
 
 class Constant : public ExprNode
@@ -110,7 +110,7 @@ public:
     Constant(SymbolEntry *se) : ExprNode(se){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class Id : public ExprNode
@@ -119,7 +119,7 @@ public:
     Id(SymbolEntry *se) : ExprNode(se){SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class StmtNode : public Node
@@ -133,7 +133,7 @@ public:
     CompoundStmt(StmtNode *stmt) : stmt(stmt) {};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class SeqNode : public StmtNode
@@ -144,7 +144,7 @@ public:
     SeqNode(StmtNode *stmt1, StmtNode *stmt2) : stmt1(stmt1), stmt2(stmt2){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class DeclStmt : public StmtNode
@@ -155,7 +155,7 @@ public:
     DeclStmt(Id *id) : id(id){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class IfStmt : public StmtNode
@@ -167,7 +167,7 @@ public:
     IfStmt(ExprNode *cond, StmtNode *thenStmt) : cond(cond), thenStmt(thenStmt){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class IfElseStmt : public StmtNode
@@ -180,7 +180,7 @@ public:
     IfElseStmt(ExprNode *cond, StmtNode *thenStmt, StmtNode *elseStmt) : cond(cond), thenStmt(thenStmt), elseStmt(elseStmt) {};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class WhileStmt : public StmtNode
@@ -192,7 +192,7 @@ public:
 	WhileStmt(ExprNode *cond,StmtNode *loopStmt):cond(cond),loopStmt(loopStmt){};
 	void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class ReturnStmt : public StmtNode
@@ -203,7 +203,7 @@ public:
     ReturnStmt(ExprNode*retValue) : retValue(retValue) {};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class ExpStmt : public StmtNode
@@ -215,7 +215,7 @@ public :
     ExpStmt(ExprNode* expr1): expr1(expr1){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class AssignStmt : public StmtNode
@@ -227,7 +227,7 @@ public:
     AssignStmt(ExprNode *lval, ExprNode *expr) : lval(lval), expr(expr) {};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class IDListElement
@@ -240,8 +240,8 @@ public:
 	bool isInit()const {return val!=nullptr;}
 	std::string getName()const {return name;}
 	ExprNode* getVal()const {return val;}
-	//void typeCheck();
-    //void genCode();
+	void typeCheck();
+    void genCode();
 };
 
 class IDList
@@ -256,11 +256,12 @@ class FunctionDef : public StmtNode
 private:
     SymbolEntry *se;
     StmtNode *stmt;
+    //DeclStmt *decl;
 public:
     FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
     void output(int level);
     void typeCheck();
-    //void genCode();
+    void genCode();
 };
 
 class Ast
@@ -272,7 +273,7 @@ public:
     void setRoot(Node*n) {root = n;}
     void output();
     void typeCheck();
-    //void genCode(Unit *unit);
+    void genCode(Unit *unit);
 };
 
 #endif
