@@ -100,6 +100,8 @@ private:
 public:
     FuncRParams(SymbolEntry *se,ExprNode *expr1,ExprNode* funcRParams): ExprNode(se),expr1(expr1),funcRParams(funcRParams){};
     void output(int level);
+    ExprNode *getFirst() const {return expr1;};
+    ExprNode *getNext() const {return funcRParams;};
     void typeCheck();
     void genCode();
 };
@@ -253,12 +255,13 @@ public:
 
 class FunctionDef : public StmtNode
 {
+    typedef std::vector<std::pair<Type*,std::string>> ParamList;
 private:
     SymbolEntry *se;
     StmtNode *stmt;
-    //DeclStmt *decl;
+    ParamList paramList;
 public:
-    FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
+    FunctionDef(SymbolEntry *se, StmtNode *stmt,ParamList pl);
     void output(int level);
     void typeCheck();
     void genCode();

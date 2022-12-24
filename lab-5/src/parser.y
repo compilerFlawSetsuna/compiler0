@@ -409,7 +409,7 @@ FuncDef
         SymbolEntry *se;
         se = identifiers->lookup($2);
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $6);
+        $$ = new FunctionDef(se, $6,{});
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
@@ -435,6 +435,7 @@ FuncDef
 			SymbolEntry *param = new IdentifierSymbolEntry(l[i].first,l[i].second,identifiers->getLevel());
         	identifiers->install(l[i].second, param);
 		}
+
     }
 	RPAREN
     BlockStmt
@@ -443,7 +444,8 @@ FuncDef
         se = identifiers->lookup($2);
 
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $7);
+        $$ = new FunctionDef(se, $7,(*$4));
+
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;

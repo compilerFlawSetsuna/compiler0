@@ -71,7 +71,7 @@ public:
     BinaryInstruction(unsigned opcode, Operand *dst, Operand *src1, Operand *src2, BasicBlock *insert_bb = nullptr);
     ~BinaryInstruction();
     void output() const;
-    enum {SUB, ADD, AND, OR};
+    enum {SUB, ADD, AND, OR,MUL,DIV,MOD};
 };
 
 class CmpInstruction : public Instruction
@@ -118,5 +118,15 @@ public:
     ~RetInstruction();
     void output() const;
 };
+
+/*class CallInstruction : public Instruction
+{
+public:
+    CallInstruction(Operand *src, BasicBlock *insert_bb = nullptr);
+    ~CallInstruction();
+    void output() const;
+protected:
+    std::vector<Operand*>paramList;
+};*/
 
 #endif

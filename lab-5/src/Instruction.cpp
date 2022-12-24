@@ -87,6 +87,15 @@ void BinaryInstruction::output() const
     case SUB:
         op = "sub";
         break;
+    case MUL:
+        op = "mul";
+        break;
+    case DIV:
+        op = "sdiv";
+        break;
+    case MOD:
+        op = "srem";
+        break;
     default:
         break;
     }
@@ -311,3 +320,8 @@ void StoreInstruction::output() const
 
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
+
+/*CallInstruction::CallInstruction()
+{
+
+}*/

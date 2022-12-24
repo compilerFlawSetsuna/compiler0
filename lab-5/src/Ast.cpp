@@ -43,11 +43,14 @@ void FunctionDef::genCode()
 {
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
+    //printf("FunctionDef::genCode()");
+    func->setParamList(paramList);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
     
-    //if (decl)decl->genCode();
+    
+
     if (stmt)stmt->genCode();
 
     /*
@@ -138,9 +141,9 @@ void BinaryExpr::genCode()
 
         true_list.push_back(new CondBrInstruction(trueBB, endBB, dst, bb));
         false_list.push_back(new UncondBrInstruction(falseBB, endBB));
-        
+
     }
-    else if(op >= ADD && op <= SUB)
+    else if(op >= ADD && op <= MOD)
     {
         expr1->genCode();
         expr2->genCode();
@@ -155,10 +158,20 @@ void BinaryExpr::genCode()
         case SUB:
             opcode = BinaryInstruction::SUB;
             break;
+        case MUL:
+            opcode = BinaryInstruction::MUL;
+            break;
+        case DIV:
+            opcode = BinaryInstruction::DIV;
+            break;
+        case MOD:
+            opcode = BinaryInstruction::MOD;
+            break;
         }
         new BinaryInstruction(opcode, dst, src1, src2, bb);
     }
 }
+
 
 void UnaryExpr::genCode()
 {
@@ -180,6 +193,16 @@ void PrimaryExp::genCode(){
 
 void FuncUseExpr::genCode(){
     //Todo
+    /*BasicBlock* bb = builder->getInsertBB();
+    std::vector<Operand*> paramList;
+    FuncRParams* param = (FuncRParams*)funcRParams;
+    while (param!=nullptr) {
+        param->getFirst()->genCode();
+        paramList.push_back(param->getFirst()->getOperand());
+        param = (FuncRParams*)param->getNext();
+    }*/
+
+    //new CallInstruction(dst, symbolEntry, paramList, bb);
 }
 
 void FuncRParams::genCode(){
@@ -271,7 +294,7 @@ void DeclStmt::genCode()
     IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
     if(se->isGlobal())
     {
-        printf("gen global var");
+        //printf("gen global var");
         Operand *addr;
         SymbolEntry *addr_se;
         addr_se = new IdentifierSymbolEntry(*se);
@@ -785,4 +808,10 @@ void FunctionDef::output(int level)
     fprintf(yyout, "%*cFunctionDefine function name: %s, type: %s\n", level, ' ',
             name.c_str(), type.c_str());
     stmt->output(level + 4);
+}
+
+FunctionDef::FunctionDef(SymbolEntry *se, StmtNode *stmt,ParamList pl): se(se), stmt(stmt){
+    for(auto i=pl.begin();i!=pl.end();i++){
+        paramList.push_back((*i));
+    }
 }
