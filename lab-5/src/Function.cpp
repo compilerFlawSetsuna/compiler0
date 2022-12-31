@@ -31,6 +31,7 @@ void Function::output() const
 {
     FunctionType* funcType = dynamic_cast<FunctionType*>(sym_ptr->getType());
     Type *retType = funcType->getRetType();
+    
     fprintf(yyout, "define %s %s(", retType->toStr().c_str(), sym_ptr->toStr().c_str());//pre paramlist
     for(auto i=paramList.rbegin();i!=paramList.rend();i++)
     {

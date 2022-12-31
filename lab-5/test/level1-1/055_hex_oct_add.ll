@@ -1,26 +1,3 @@
-program
-    FunctionDefine function name: @main, type: i32()
-        CompoundStmt
-            Sequence
-                Sequence
-                    Sequence
-                        Sequence
-                            DeclStmt
-                                Id	name: @b	scope: 2	type: i32
-                            DeclStmt
-                                Id	name: @a	scope: 2	type: i32
-                        AssignStmt
-                            Id	name: @a	scope: 2	type: i32
-                            IntegerLiteral	value: 0	type: i32
-                    AssignStmt
-                        Id	name: @b	scope: 2	type: i32
-                        IntegerLiteral	value: 0	type: i32
-                ReturnStmt
-                    BinaryExpr	op: add
-                        BinaryExpr	op: add
-                            Id	name: @a	scope: 2	type: i32
-                            Id	name: @b	scope: 2	type: i32
-                        IntegerLiteral	value: 75	type: i32
 define i32 @main() {
 B8:
   %t10 = alloca i32, align 4

@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_INCLUDE_PARSER_H_INCLUDED
 # define YY_YY_INCLUDE_PARSER_H_INCLUDED
@@ -44,62 +45,68 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 11 "src/parser.y"
+#line 13 "src/parser.y"
 
     #include "Ast.h"
     #include "SymbolTable.h"
     #include "Type.h"
+    #include "Unit.h"
 
-#line 54 "include/parser.h"
+#line 56 "include/parser.h"
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    ID = 258,
-    INTEGER = 259,
-    IF = 260,
-    ELSE = 261,
-    WHILE = 262,
-    CONTINUE = 263,
-    BREAK = 264,
-    CONST = 265,
-    INT = 266,
-    VOID = 267,
-    LPAREN = 268,
-    RPAREN = 269,
-    LBRACE = 270,
-    RBRACE = 271,
-    SEMICOLON = 272,
-    COMMA = 273,
-    ADD = 274,
-    SUB = 275,
-    MUL = 276,
-    DIV = 277,
-    MOD = 278,
-    OR = 279,
-    AND = 280,
-    LESS = 281,
-    GREATER = 282,
-    LESSEQ = 283,
-    GREATEREQ = 284,
-    NOTEQ = 285,
-    EQUAL = 286,
-    ASSIGN = 287,
-    RETURN = 288,
-    UMINUS = 289,
-    UPLUS = 290,
-    NOT = 291,
-    THEN = 292
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    ID = 258,                      /* ID  */
+    INTEGER = 259,                 /* INTEGER  */
+    IF = 260,                      /* IF  */
+    ELSE = 261,                    /* ELSE  */
+    WHILE = 262,                   /* WHILE  */
+    CONTINUE = 263,                /* CONTINUE  */
+    BREAK = 264,                   /* BREAK  */
+    CONST = 265,                   /* CONST  */
+    INT = 266,                     /* INT  */
+    VOID = 267,                    /* VOID  */
+    LPAREN = 268,                  /* LPAREN  */
+    RPAREN = 269,                  /* RPAREN  */
+    LBRACE = 270,                  /* LBRACE  */
+    RBRACE = 271,                  /* RBRACE  */
+    SEMICOLON = 272,               /* SEMICOLON  */
+    COMMA = 273,                   /* COMMA  */
+    ADD = 274,                     /* ADD  */
+    SUB = 275,                     /* SUB  */
+    MUL = 276,                     /* MUL  */
+    DIV = 277,                     /* DIV  */
+    MOD = 278,                     /* MOD  */
+    OR = 279,                      /* OR  */
+    AND = 280,                     /* AND  */
+    LESS = 281,                    /* LESS  */
+    GREATER = 282,                 /* GREATER  */
+    LESSEQ = 283,                  /* LESSEQ  */
+    GREATEREQ = 284,               /* GREATEREQ  */
+    NOTEQ = 285,                   /* NOTEQ  */
+    EQUAL = 286,                   /* EQUAL  */
+    ASSIGN = 287,                  /* ASSIGN  */
+    RETURN = 288,                  /* RETURN  */
+    UMINUS = 289,                  /* UMINUS  */
+    UPLUS = 290,                   /* UPLUS  */
+    NOT = 291,                     /* NOT  */
+    THEN = 292                     /* THEN  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "src/parser.y"
+#line 20 "src/parser.y"
 
     int itype;
     char* strtype;
@@ -110,7 +117,7 @@ union YYSTYPE
 	IDListElement* idlistelement;
 	std::vector<std::pair<Type*,std::string>> *paramlist;
 
-#line 114 "include/parser.h"
+#line 121 "include/parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -121,6 +128,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE yylval;
 
+
 int yyparse (void);
+
 
 #endif /* !YY_YY_INCLUDE_PARSER_H_INCLUDED  */

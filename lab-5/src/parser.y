@@ -3,7 +3,9 @@
     #include <vector>
     #include <assert.h>
     #include "parser.h"
+    
     extern Ast ast;
+    extern Unit unit;
     int yylex();
     int yyerror( char const * );
 }
@@ -12,6 +14,7 @@
     #include "Ast.h"
     #include "SymbolTable.h"
     #include "Type.h"
+    #include "Unit.h"
 }
 
 %union {
@@ -188,7 +191,7 @@ MulExp
         $$ = new BinaryExpr(se, BinaryExpr::MOD, $1, $3);
     }
     ;
-    UnaryExp
+UnaryExp
     :
     PrimaryExp{$$=$1;}
     |
@@ -312,6 +315,8 @@ Type
 		$$ = TypeSystem::intType;
 	}
     ;
+
+
 /*DeclStmt
     :
     Type ID SEMICOLON {
@@ -322,7 +327,9 @@ Type
         delete []$2;
     }
     ;*/
-    IDListEle
+
+
+IDListEle
 	:
 	ID ASSIGN Exp{
 		$$ = new IDListElement($1,$3);
@@ -349,7 +356,7 @@ IDListDeclStmt
 		//遍历List并设置Type
 		std::vector<IDListElement *>l = $2->list;
 		IDListElement* head=l[0];
-		SymbolEntry *se;
+		IdentifierSymbolEntry *se;
 		se = new IdentifierSymbolEntry($1,head->getName(),identifiers->getLevel());
 		identifiers->install(head->getName(),se);
 		StmtNode *prestmt = new DeclStmt(new Id(se));
@@ -357,9 +364,13 @@ IDListDeclStmt
 			prestmt = new SeqNode(
 				prestmt,
 				new AssignStmt(
-					new Id(se),head->getVal()
+					new Id(se),head->getExpr()
 				)
 			);
+            if(se->isGlobal()){
+                se->setValue(head->getExpr()->getValue());
+                unit.insertGlobal(se);
+            }
 		}
 
 		for(int i=1;i<(int)l.size();i++){
@@ -370,9 +381,13 @@ IDListDeclStmt
 				pretmp = new SeqNode(
 					pretmp,
 					new AssignStmt(
-						new Id(se),l[i]->getVal()
+						new Id(se),l[i]->getExpr()
 					)
 				);
+                if(se->isGlobal()){
+                    se->setValue(head->getExpr()->getValue());
+                    unit.insertGlobal(se);
+                }
 			}
 			prestmt = new SeqNode(prestmt,pretmp);
 		}

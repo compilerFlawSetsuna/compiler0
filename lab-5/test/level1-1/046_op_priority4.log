@@ -1,4 +1,1 @@
-test/level1-1/046_op_priority4.ll:1:1: error: expected top-level entity
-program
-^
-1 error generated.
+timeout: the monitored command dumped core

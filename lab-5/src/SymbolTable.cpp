@@ -45,7 +45,7 @@ std::string TemporarySymbolEntry::toStr()
 
 SymbolTable::SymbolTable()
 {
-   Type *funcType;
+    Type *funcType;
     funcType = new FunctionType(TypeSystem::intType,{});
     std::string s = "getint";
     symbolTable[s]=new IdentifierSymbolEntry(funcType, s.c_str(), identifiers->getLevel());

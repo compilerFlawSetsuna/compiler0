@@ -74,6 +74,7 @@ BinaryInstruction::~BinaryInstruction()
 
 void BinaryInstruction::output() const
 {
+    
     std::string s1, s2, s3, op, type;
     s1 = operands[0]->toStr();
     s2 = operands[1]->toStr();

@@ -10,12 +10,15 @@ class Unit
     typedef std::vector<Function *>::reverse_iterator reverse_iterator;
 
 private:
+    std::vector<IdentifierSymbolEntry* >global_list;
     std::vector<Function *> func_list;
 public:
     Unit() = default;
     ~Unit() ;
     void insertFunc(Function *);
     void removeFunc(Function *);
+    void insertGlobal(IdentifierSymbolEntry *);
+    void removeGlobal(IdentifierSymbolEntry *);
     void output() const;
     iterator begin() { return func_list.begin(); };
     iterator end() { return func_list.end(); };

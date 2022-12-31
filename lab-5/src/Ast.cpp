@@ -178,12 +178,13 @@ void UnaryExpr::genCode()
     expr1->genCode();
     BasicBlock* bb =builder->getInsertBB();
     Operand* src = expr1->getOperand();
-
+    
     if(op == UnaryExpr::UMINUS){
-        Operand* src2 = new Operand(new ConstantSymbolEntry(dst->getType(),0));
         
+        Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(4),0));
         new BinaryInstruction(BinaryInstruction::SUB,dst,src2,src,bb);
     }//Todo :NOT
+    
 }
 
 void PrimaryExp::genCode(){
@@ -294,7 +295,6 @@ void DeclStmt::genCode()
     IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
     if(se->isGlobal())
     {
-        //printf("gen global var");
         Operand *addr;
         SymbolEntry *addr_se;
         addr_se = new IdentifierSymbolEntry(*se);
@@ -820,4 +820,101 @@ FunctionDef::FunctionDef(SymbolEntry *se, StmtNode *stmt,ParamList pl): se(se), 
     for(auto i=pl.begin();i!=pl.end();i++){
         paramList.push_back((*i));
     }
+}
+
+int BinaryExpr::getValue()
+{
+    if (op == AND)
+    {
+        return expr1->getValue() && expr2->getValue();
+    }
+    else if(op == OR)
+    {
+        return expr1->getValue() || expr2->getValue();
+    }
+    else if(op >= LESS && op <= EQUAL)
+    {
+        int val;
+        switch (op)
+        {
+        case LESS:
+            val=expr1->getValue() < expr2->getValue()?1:0;
+            break;
+        case GREATER:
+            val=expr1->getValue() > expr2->getValue()?1:0;
+            break;
+        case LESSEQ:
+            val=expr1->getValue() <= expr2->getValue()?1:0;
+            break;
+        case GREATEREQ:
+            val=expr1->getValue() >= expr2->getValue()?1:0;
+            break;
+        case NOTEQ:
+            val=expr1->getValue() != expr2->getValue()?1:0;
+            break;
+        case EQUAL:
+            val=expr1->getValue() == expr2->getValue()?1:0;
+            break;
+        }
+        return val;
+    }
+    else if(op >= ADD && op <= MOD)
+    {
+        int val;
+        switch (op)
+        {
+        case ADD:
+            val=expr1->getValue() + expr2->getValue();
+            break;
+        case SUB:
+            val=expr1->getValue() - expr2->getValue();
+            break;
+        case MUL:
+            val=expr1->getValue() * expr2->getValue();
+            break;
+        case DIV:
+            val=expr1->getValue() / expr2->getValue();
+            break;
+        case MOD:
+            val=expr1->getValue() % expr2->getValue();
+            break;
+        }
+        return val;
+    }
+    return 0;
+}
+
+
+int UnaryExpr::getValue()
+{
+    if(op == UnaryExpr::UMINUS){
+        return -expr1->getValue();
+    }else if(op == UnaryExpr::UPLUS){
+        return expr1->getValue();
+    }else if(op == UnaryExpr::NOT){
+        return !expr1->getValue();
+    }
+    return 0;
+}
+
+int PrimaryExp::getValue(){
+    return expr1->getValue();
+}
+
+int FuncUseExpr::getValue(){
+    return 0;
+}
+
+int FuncRParams::getValue(){
+    return expr1->getValue();
+}
+
+int Constant::getValue()
+{
+    return dynamic_cast<ConstantSymbolEntry*>(symbolEntry)->getValue();
+}
+
+int Id::getValue()
+{
+    return dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getValue();
 }

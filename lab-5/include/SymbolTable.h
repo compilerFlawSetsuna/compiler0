@@ -79,6 +79,7 @@ private:
     int scope;
     Operand *addr;  // The address of the identifier.
     // You can add any field you need here.
+    int value=0;
 
 public:
     IdentifierSymbolEntry(Type *type, std::string name, int scope);
@@ -91,6 +92,9 @@ public:
     void setAddr(Operand *addr) {this->addr = addr;};
     Operand* getAddr() {return addr;};
     // You can add any function you need here.
+    void setValue(int v){value=v;}
+    int getValue() const {return value;}
+    std::string getName()const {return name;}
 };
 
 

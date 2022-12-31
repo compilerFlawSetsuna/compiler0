@@ -1,24 +1,4 @@
-program
-    Sequence
-        Sequence
-            DeclStmt
-                Id	name: @a	scope: 0	type: i32
-            AssignStmt
-                Id	name: @a	scope: 0	type: i32
-                IntegerLiteral	value: 10	type: i32
-        FunctionDefine function name: @main, type: i32()
-            CompoundStmt
-                Sequence
-                    Sequence
-                        DeclStmt
-                            Id	name: @b	scope: 2	type: i32
-                        AssignStmt
-                            Id	name: @b	scope: 2	type: i32
-                            IntegerLiteral	value: 2	type: i32
-                    ReturnStmt
-                        BinaryExpr	op: sub
-                            Id	name: @b	scope: 2	type: i32
-                            Id	name: @a	scope: 0	type: i32
+@a = dso_local global i32 10, align 4
 define i32 @main() {
 B7:
   %t8 = alloca i32, align 4

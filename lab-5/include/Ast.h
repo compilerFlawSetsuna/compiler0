@@ -44,6 +44,8 @@ public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
     Operand* getOperand() {return dst;};
     SymbolEntry* getSymPtr() {return symbolEntry;};
+    //for global var
+    virtual int getValue() = 0;
 };
 
 class BinaryExpr : public ExprNode
@@ -57,6 +59,7 @@ public:
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 class UnaryExpr : public ExprNode
 {
@@ -65,10 +68,11 @@ private:
     ExprNode *expr1;
 public:
     enum {UMINUS,UPLUS,NOT};
-    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se),op(op),expr1(expr1){};
+    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se),op(op),expr1(expr1){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 class PrimaryExp : public ExprNode
 {
@@ -79,6 +83,7 @@ public :
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 
 class FuncUseExpr : public ExprNode
@@ -91,6 +96,7 @@ public:
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 
 class FuncRParams: public ExprNode
@@ -104,6 +110,7 @@ public:
     ExprNode *getNext() const {return funcRParams;};
     void typeCheck();
     void genCode();
+    int getValue();
 };
 
 class Constant : public ExprNode
@@ -113,6 +120,7 @@ public:
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 
 class Id : public ExprNode
@@ -122,6 +130,7 @@ public:
     void output(int level);
     void typeCheck();
     void genCode();
+    int getValue();
 };
 
 class StmtNode : public Node
@@ -241,7 +250,7 @@ public:
 	IDListElement(std::string name,ExprNode* val):name(name),val(val){}
 	bool isInit()const {return val!=nullptr;}
 	std::string getName()const {return name;}
-	ExprNode* getVal()const {return val;}
+	ExprNode* getExpr()const {return val;}
 	void typeCheck();
     void genCode();
 };

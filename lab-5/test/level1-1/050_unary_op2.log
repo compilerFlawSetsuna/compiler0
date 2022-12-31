@@ -1,1 +1,4 @@
-timeout: the monitored command dumped core
+test/level1-1/050_unary_op2.ll:15:1: error: expected instruction opcode
+}
+^
+1 error generated.
