@@ -75,6 +75,9 @@ void FunctionDef::genCode()
             thenBB = dynamic_cast<UncondBrInstruction*>(inst)->getBranch();
             bb->addSucc(thenBB);
             thenBB->addPred(bb);
+        }else if(!inst->isRet()){
+            Operand *op = new Operand(new ConstantSymbolEntry(new IntType(32),0));
+            new RetInstruction(op,bb);
         }
     }
 }
@@ -181,7 +184,7 @@ void UnaryExpr::genCode()
     
     if(op == UnaryExpr::UMINUS){
         
-        Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(4),0));
+        Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(32),0));
         new BinaryInstruction(BinaryInstruction::SUB,dst,src2,src,bb);
     }//Todo :NOT
     
@@ -189,6 +192,7 @@ void UnaryExpr::genCode()
 
 void PrimaryExp::genCode(){
     //Todo
+    //printf("Gen PrimaryExp");
     expr1->genCode();
 }
 
@@ -246,7 +250,6 @@ void IfStmt::genCode()
 void IfElseStmt::genCode()
 {
     // Todo
-    
     Function* func;
     BasicBlock *then_bb, *else_bb , *end_bb;
     func = builder->getInsertBB()->getParent();
@@ -258,16 +261,15 @@ void IfElseStmt::genCode()
     backPatch(cond->trueList(),then_bb);
     backPatch(cond->falseList(),else_bb);
 
-
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
     then_bb = builder->getInsertBB();
-    new UncondBrInstruction(end_bb, then_bb);
+    new UncondBrInstruction(end_bb,then_bb);
 
     builder->setInsertBB(else_bb);
     elseStmt->genCode();
     else_bb = builder->getInsertBB();
-    new UncondBrInstruction(end_bb, else_bb);
+    new UncondBrInstruction(end_bb,else_bb);
 
     builder->setInsertBB(end_bb);
 }
@@ -322,6 +324,7 @@ void DeclStmt::genCode()
 void ReturnStmt::genCode()
 {
     // Todo
+    //printf("Gen ReturnStmt");
     BasicBlock *bb = builder->getInsertBB();
     Operand *op = nullptr;
     if(retValue){

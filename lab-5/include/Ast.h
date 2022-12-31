@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include "Operand.h"
+#include "Type.h"
 
 class SymbolEntry;
 class Unit;
@@ -11,6 +12,7 @@ class Function;
 class BasicBlock;
 class Instruction;
 class IRBuilder;
+class Type;
 
 class Node
 {

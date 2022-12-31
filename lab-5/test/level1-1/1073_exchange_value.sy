@@ -14,7 +14,7 @@ int main()
     i=j;
     j=temp;
 
-    putint(i+1);
+    putint(i);
     temp = 10;
     putch(temp);
     putint(j);

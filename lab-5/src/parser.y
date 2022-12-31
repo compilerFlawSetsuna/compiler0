@@ -149,8 +149,9 @@ PrimaryExp
         $$ = new Constant(se);
     }
     |LPAREN Exp RPAREN{
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new PrimaryExp(se,$2);
+        //SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        //$$ = new PrimaryExp(se,$2);
+        $$ = $2;
     }
     ;
 AddExp
