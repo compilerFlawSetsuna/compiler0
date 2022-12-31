@@ -355,28 +355,13 @@ IDListDeclStmt
 	Type IDList SEMICOLON{
 		//遍历List并设置Type
 		std::vector<IDListElement *>l = $2->list;
-		IDListElement* head=l[0];
-		IdentifierSymbolEntry *se;
-		se = new IdentifierSymbolEntry($1,head->getName(),identifiers->getLevel());
-		identifiers->install(head->getName(),se);
-		StmtNode *prestmt = new DeclStmt(new Id(se));
-		if(head->isInit()){
-			prestmt = new SeqNode(
-				prestmt,
-				new AssignStmt(
-					new Id(se),head->getExpr()
-				)
-			);
-            if(se->isGlobal()){
-                se->setValue(head->getExpr()->getValue());
-                unit.insertGlobal(se);
-            }
-		}
-
-		for(int i=1;i<(int)l.size();i++){
+        IdentifierSymbolEntry *se;
+        StmtNode *prestmt;
+		for(int i=0;i<(int)l.size();i++){
 			se = new IdentifierSymbolEntry($1,l[i]->getName(),identifiers->getLevel());
 			identifiers->install(l[i]->getName(),se);
-			StmtNode *pretmp = new DeclStmt(new Id(se));
+
+            StmtNode *pretmp = new DeclStmt(new Id(se));
 			if(l[i]->isInit()){
 				pretmp = new SeqNode(
 					pretmp,
@@ -384,12 +369,14 @@ IDListDeclStmt
 						new Id(se),l[i]->getExpr()
 					)
 				);
-                if(se->isGlobal()){
-                    se->setValue(head->getExpr()->getValue());
-                    unit.insertGlobal(se);
-                }
 			}
-			prestmt = new SeqNode(prestmt,pretmp);
+            if(se->isGlobal()){
+                if(l[i]->isInit())  se->setValue(l[i]->getExpr()->getValue());
+                else se->setValue(0);
+                unit.insertGlobal(se);
+            }
+			if(i==0)prestmt = pretmp;
+            else    prestmt = new SeqNode(prestmt,pretmp);
 		}
 		$$ = (StmtNode *)prestmt;
 	}
