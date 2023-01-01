@@ -71,6 +71,7 @@ Stmt
     | FuncDef {$$=$1;}
     | IDListDeclStmt {$$=$1;}
 	| ExpStmt{$$=$1;}
+    | SEMICOLON {$$ = new EmptyStmt();}
     ;
 ExpStmt
     :
@@ -108,6 +109,7 @@ BlockStmt
             identifiers = identifiers->getPrev();
             delete top;
         }
+    |   LBRACE  RBRACE  {$$=new EmptyStmt();}
     ;
 IfStmt
     : IF LPAREN Cond RPAREN Stmt %prec THEN {

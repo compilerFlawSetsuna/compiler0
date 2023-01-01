@@ -344,6 +344,8 @@ void CallInstruction::output() const
     fprintf(yyout,"  %s = ",dst.c_str());
     if(func->toStr()=="@getint"){fprintf(yyout,"call i32 bitcast (i32 (...)* @getint to i32 ()*)()\n");return;}
     if(func->toStr()=="@putint"){fprintf(yyout,"call i32 bitcast (i32 (...)* @putint to i32 (i32)*)(i32 %s)\n",operands[1]->toStr().c_str());return;}
+    if(func->toStr()=="@getch"){fprintf(yyout,"call i32 bitcast (i32 (...)* @getch to i32 ()*)()\n");return;}
+    if(func->toStr()=="@putch"){fprintf(yyout,"call i32 bitcast (i32 (...)* @putch to i32 (i32)*)(i32 %s)\n",operands[1]->toStr().c_str());return;}
     fprintf(yyout,"call %s %s(",dst_type.c_str(),func->toStr().c_str());
     for (long unsigned int i = 1; i < operands.size(); i++) {
         if (i != 1)fprintf(yyout, ", ");

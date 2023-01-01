@@ -1,10 +1,5 @@
-int a;
-int b;
-int c;
-int d;
-int e;
-int main()
-{
-	a=getint();
-	return 0;
+int main(){
+	int b=0xf;
+	int a = 010;
+	return a;
 }

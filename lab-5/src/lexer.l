@@ -16,6 +16,17 @@
         std::string DEBUG_INFO = "[DEBUG LAB4]: \t" + s + "\n";
         fputs(DEBUG_INFO.c_str(), yyout);
     }
+    int myatoi(const char* s,int radix){
+        int ans=0;
+        for(int i=0;s[i]!='\0';i++){
+            char t=s[i];
+            if(t>='0'&&t<='9')ans = ans * radix+t-'0';
+            else if(t>='a'&&t<='f')ans = ans * radix+t-'a'+10;
+            else ans = ans * radix+t-'A'+10;
+        }
+        return ans;
+
+    }
 %}
 HEX (\+|\-)?0(X|x)[0-9a-fA-F]+
 OCTAL (\+|\-)?0[0-7]+
@@ -199,19 +210,19 @@ comment_end "*/"
 {DECIMIAL} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
-    yylval.itype = atoi(yytext);
+    yylval.itype = myatoi(yytext,10);
     return INTEGER;
 }
 {OCTAL} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
-    yylval.itype = atoi(yytext);
+    yylval.itype = myatoi(yytext+1,8);
     return INTEGER;
 }
 {HEX} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
-    yylval.itype = atoi(yytext);
+    yylval.itype = myatoi(yytext+2,16);
     return INTEGER;
 }
 {ID} {

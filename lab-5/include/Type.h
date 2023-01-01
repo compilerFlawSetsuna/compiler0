@@ -13,6 +13,7 @@ public:
     Type(int kind) : kind(kind) {};
     virtual ~Type() {};
     virtual std::string toStr() = 0;
+    virtual int getSize() {return 0;};
     bool isInt() const {return kind == INT;};
     bool isVoid() const {return kind == VOID;};
     bool isFunc() const {return kind == FUNC;};
@@ -25,6 +26,7 @@ private:
 public:
     IntType(int size) : Type(Type::INT), size(size){};
     std::string toStr();
+    int getSize() {return size;}
 };
 
 class VoidType : public Type

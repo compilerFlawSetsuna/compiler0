@@ -36,6 +36,8 @@ void Unit::output() const
     
     fprintf(yyout,"declare i32 @getint(...) #1\n");
     fprintf(yyout,"declare i32 @putint(...) #1\n");
+    fprintf(yyout,"declare i32 @getch(...) #1\n");
+    fprintf(yyout,"declare i32 @putch(...) #1\n");
 }
 
 Unit::~Unit()

@@ -245,6 +245,15 @@ public:
     void genCode();
 };
 
+class EmptyStmt : public StmtNode
+{
+public:
+    EmptyStmt(){}
+    void output(int level){};
+    void typeCheck(){};
+    void genCode(){};
+};
+
 class IDListElement
 {
 private:

@@ -41,6 +41,7 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
+    //printf("gen FuncDef");
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
     //printf("FunctionDef::genCode()");
@@ -183,11 +184,21 @@ void UnaryExpr::genCode()
     Operand* src = expr1->getOperand();
     
     if(op == UnaryExpr::UMINUS){
-        
-        Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(32),0));
-        new BinaryInstruction(BinaryInstruction::SUB,dst,src2,src,bb);
-    }//Todo :NOT
-    
+        //printf("size is %s",src->getType()->toStr().c_str());
+        if(src->getType()->toStr()=="i32")
+        {
+            Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(32),0));
+            new BinaryInstruction(BinaryInstruction::SUB,dst,src2,src,bb);
+        }else{
+            dst = src;
+        }
+    }else if(op == UnaryExpr::NOT){
+        Operand* res = new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+        Operand* zero = new Operand(new ConstantSymbolEntry(TypeSystem::boolType,0));
+        new CmpInstruction(CmpInstruction::E, res, src,zero,bb);
+        dst = res;
+        //new BinaryInstruction(BinaryInstruction::ADD,dst,zero,src,bb);
+    }else{dst = src;}
 }
 
 void PrimaryExp::genCode(){
@@ -286,6 +297,28 @@ void IfElseStmt::genCode()
 void WhileStmt::genCode()
 {
     //Todo
+    Function *func;
+    BasicBlock *cond_bb, *loop_bb, *end_bb,*bb;
+
+    func = builder->getInsertBB()->getParent();
+    cond_bb = new BasicBlock(func);
+    loop_bb = new BasicBlock(func);
+    end_bb = new BasicBlock(func);
+    bb = builder->getInsertBB();
+
+    new UncondBrInstruction(cond_bb,bb);
+
+    builder->setInsertBB(cond_bb);
+    cond->genCode();
+    backPatch(cond->trueList(), loop_bb);
+    backPatch(cond->falseList(), end_bb);
+
+    builder->setInsertBB(loop_bb);
+    loopStmt->genCode();
+    loop_bb=builder->getInsertBB();
+    new UncondBrInstruction(cond_bb, loop_bb);
+
+    builder->setInsertBB(end_bb);
 }
 
 void CompoundStmt::genCode()
