@@ -1,4 +1,0 @@
-test/level1-1/1073_exchange_value.ll:21:19: error: use of undefined value '@putch'
-  %t22 = call i32 @putch(i32 %t21)
-                  ^
-1 error generated.
