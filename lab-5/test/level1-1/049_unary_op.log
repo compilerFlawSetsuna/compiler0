@@ -1,0 +1,4 @@
+test/level1-1/049_unary_op.ll:6:20: error: use of undefined value '%t5'
+  %t6 = sub i32 0, %t5
+                   ^
+1 error generated.

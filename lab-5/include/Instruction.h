@@ -29,7 +29,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,CALL};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -120,14 +120,14 @@ public:
     void output() const;
 };
 
-/*class CallInstruction : public Instruction
+class CallInstruction : public Instruction
 {
+protected:
+    SymbolEntry *func;
 public:
-    CallInstruction(Operand *src, BasicBlock *insert_bb = nullptr);
+    CallInstruction(Operand *src,SymbolEntry* func,std::vector<Operand*> params,BasicBlock *insert_bb = nullptr);
     ~CallInstruction();
     void output() const;
-protected:
-    std::vector<Operand*>paramList;
-};*/
+};
 
 #endif

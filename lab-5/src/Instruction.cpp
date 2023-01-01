@@ -323,7 +323,40 @@ void StoreInstruction::output() const
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
 
-/*CallInstruction::CallInstruction()
+CallInstruction::CallInstruction(Operand *dst,SymbolEntry* func,std::vector<Operand*> params,BasicBlock *insert_bb): Instruction(CALL, insert_bb),func(func)
 {
+    //printf("Before CallInst\n");
+    operands.push_back(dst);
+    if(dst)dst->setDef(this);
+    //printf("In CallInst\n");
+    for(auto i:params){
+        operands.push_back(i);
+        i->addUse(this);
+    }
+    //printf("After CallInst\n");
+}
 
-}*/
+void CallInstruction::output() const
+{
+    //printf("Before CallInst output\n");
+    std::string dst = operands[0]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    fprintf(yyout,"  %s = ",dst.c_str());
+    if(func->toStr()=="@getint"){fprintf(yyout,"call i32 bitcast (i32 (...)* @getint to i32 ()*)()\n");return;}
+    if(func->toStr()=="@putint"){fprintf(yyout,"call i32 bitcast (i32 (...)* @putint to i32 (i32)*)(i32 %s)\n",operands[1]->toStr().c_str());return;}
+    fprintf(yyout,"call %s %s(",dst_type.c_str(),func->toStr().c_str());
+    for (long unsigned int i = 1; i < operands.size(); i++) {
+        if (i != 1)fprintf(yyout, ", ");
+        fprintf(yyout, "%s %s", operands[i]->getType()->toStr().c_str(),operands[i]->toStr().c_str());
+    }
+    fprintf(yyout,")\n");
+}
+CallInstruction::~CallInstruction()
+{
+    operands[0]->setDef(nullptr);
+    if(operands[0]->usersNum() == 0)
+        delete operands[0];
+    for (long unsigned int i = 1; i < operands.size(); i++) {
+        operands[i]->removeUse(this);
+    }
+}

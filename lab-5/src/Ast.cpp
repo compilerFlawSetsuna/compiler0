@@ -198,16 +198,25 @@ void PrimaryExp::genCode(){
 
 void FuncUseExpr::genCode(){
     //Todo
-    /*BasicBlock* bb = builder->getInsertBB();
-    std::vector<Operand*> paramList;
-    FuncRParams* param = (FuncRParams*)funcRParams;
-    while (param!=nullptr) {
-        param->getFirst()->genCode();
-        paramList.push_back(param->getFirst()->getOperand());
-        param = (FuncRParams*)param->getNext();
-    }*/
 
-    //new CallInstruction(dst, symbolEntry, paramList, bb);
+    BasicBlock* bb = builder->getInsertBB();
+    std::vector<Operand*> paramList={};
+    ExprNode* param = funcRParams;
+    if(param!=nullptr){
+        while (param->isRParam()) {
+
+            FuncRParams* tmp = dynamic_cast<FuncRParams*>(param);
+            tmp->getFirst()->genCode();
+            paramList.push_back(tmp->getFirst()->getOperand());
+            //printf("push\n");
+            param = tmp->getNext();
+        }
+        param->genCode();
+        paramList.push_back(param->getOperand());
+        //printf("push\n");
+    }
+
+    new CallInstruction(dst, funcName->getSymPtr(), paramList, bb);
 }
 
 void FuncRParams::genCode(){

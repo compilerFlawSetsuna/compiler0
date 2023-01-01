@@ -25,12 +25,17 @@ void Unit::removeGlobal(IdentifierSymbolEntry *se)
 
 void Unit::output() const
 {
+
+    
     for (auto &v : global_list)
     {
         fprintf(yyout,"@%s = dso_local global %s %d, align 4\n",v->getName().c_str(),v->getType()->toStr().c_str(),v->getValue());
     }
     for (auto &func : func_list)
         func->output();
+    
+    fprintf(yyout,"declare i32 @getint(...) #1\n");
+    fprintf(yyout,"declare i32 @putint(...) #1\n");
 }
 
 Unit::~Unit()

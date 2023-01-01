@@ -48,6 +48,7 @@ public:
     SymbolEntry* getSymPtr() {return symbolEntry;};
     //for global var
     virtual int getValue() = 0;
+    virtual bool isRParam(){return false;}
 };
 
 class BinaryExpr : public ExprNode
@@ -93,8 +94,8 @@ class FuncUseExpr : public ExprNode
 private:
     ExprNode *funcName,*funcRParams;
 public:
-    FuncUseExpr(SymbolEntry *se, ExprNode*funcName, ExprNode* funcRParams):  ExprNode(se),funcName(funcName), funcRParams(funcRParams){};
-    FuncUseExpr(SymbolEntry *se, ExprNode*funcName): ExprNode(se),funcName(funcName),funcRParams(nullptr){};
+    FuncUseExpr(SymbolEntry *se, ExprNode*funcName, ExprNode* funcRParams):  ExprNode(se),funcName(funcName), funcRParams(funcRParams){dst = new Operand(se);};
+    FuncUseExpr(SymbolEntry *se, ExprNode*funcName): ExprNode(se),funcName(funcName),funcRParams(nullptr){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
     void genCode();
@@ -113,6 +114,7 @@ public:
     void typeCheck();
     void genCode();
     int getValue();
+    bool isRParam(){return true;}
 };
 
 class Constant : public ExprNode
