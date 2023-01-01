@@ -34,6 +34,7 @@ std::vector<Instruction*> Node::merge(std::vector<Instruction*> &list1, std::vec
 
 void Ast::genCode(Unit *unit)
 {
+    //printf("gen Ast");
     IRBuilder *builder = new IRBuilder(unit);
     Node::setIRBuilder(builder);
     root->genCode();
@@ -41,6 +42,7 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
+    
     //printf("gen FuncDef");
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
@@ -48,10 +50,21 @@ void FunctionDef::genCode()
     func->setParamList(paramList);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
+    
+    /*for(auto &i:paramList){
+        Operand *addr;
+        SymbolEntry *addr_se;
+        Type *type=i.first;
+        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+        addr = new Operand(addr_se);
+        printf("funcdef addr %d\n",(void*)addr);
+        //Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
+        //new LoadInstruction(dst, addr, entry);
+    }*/
+    
     builder->setInsertBB(entry);
     
     
-
     if (stmt)stmt->genCode();
 
     /*
@@ -181,8 +194,9 @@ void UnaryExpr::genCode()
 {
     expr1->genCode();
     BasicBlock* bb =builder->getInsertBB();
+    Function* func = bb->getParent();
     Operand* src = expr1->getOperand();
-    
+    //Todo
     if(op == UnaryExpr::UMINUS){
         //printf("size is %s",src->getType()->toStr().c_str());
         if(src->getType()->toStr()=="i32")
@@ -190,7 +204,15 @@ void UnaryExpr::genCode()
             Operand* src2 = new Operand(new ConstantSymbolEntry(new IntType(32),0));
             new BinaryInstruction(BinaryInstruction::SUB,dst,src2,src,bb);
         }else{
-            dst = src;
+            Operand* zero = new Operand(new ConstantSymbolEntry(TypeSystem::boolType,0));
+            new CmpInstruction(CmpInstruction::NE, dst, src,zero,bb);
+            BasicBlock *trueBB, *falseBB, *endBB;
+            trueBB = new BasicBlock(func);
+            falseBB = new BasicBlock(func);
+            endBB = new BasicBlock(func);
+
+            true_list.push_back(new CondBrInstruction(trueBB, endBB, dst, bb));
+            false_list.push_back(new UncondBrInstruction(falseBB, endBB));
         }
     }else if(op == UnaryExpr::NOT){
         Operand* res = new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
@@ -198,7 +220,7 @@ void UnaryExpr::genCode()
         new CmpInstruction(CmpInstruction::E, res, src,zero,bb);
         dst = res;
         //new BinaryInstruction(BinaryInstruction::ADD,dst,zero,src,bb);
-    }else{dst = src;}
+    }else {dst=src;}
 }
 
 void PrimaryExp::genCode(){
@@ -243,6 +265,7 @@ void Id::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
+    //printf("ID gencode addr %d\n",(void *)addr);
     new LoadInstruction(dst, addr, bb);
 }
 
@@ -330,6 +353,7 @@ void CompoundStmt::genCode()
 void SeqNode::genCode()
 {
     // Todo
+    
     stmt1->genCode();
     stmt2->genCode();
 }
@@ -384,14 +408,18 @@ void ExpStmt::genCode()
 
 void AssignStmt::genCode()
 {
+    
     BasicBlock *bb = builder->getInsertBB();
     expr->genCode();
+    
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(lval->getSymPtr())->getAddr();
     Operand *src = expr->getOperand();
+    
     /***
      * We haven't implemented array yet, the lval can only be ID. So we just store the result of the `expr` to the addr of the id.
      * If you want to implement array, you have to caculate the address first and then store the result into it.
      */
+    
     new StoreInstruction(addr, src, bb);
 }
 

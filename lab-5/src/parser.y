@@ -433,7 +433,6 @@ FuncDef
 		SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
-
 		for(int i=0;i<(int)l.size();i++){
 			SymbolEntry *param = new IdentifierSymbolEntry(l[i].first,l[i].second,identifiers->getLevel());
         	identifiers->install(l[i].second, param);

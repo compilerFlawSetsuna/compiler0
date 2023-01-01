@@ -1,5 +1,9 @@
-int main(){
-	int b=0xf;
-	int a = 010;
-	return a;
+int a;
+int func(int p){
+	p = p - 1;
+	return 0;
 }
+int main(){
+	return 0;
+}
+

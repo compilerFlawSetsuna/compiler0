@@ -37,7 +37,7 @@ void Function::output() const
     {
         std::string type=i->first->toStr();
         std::string name=i->second;
-        fprintf(yyout, "%s %s",type.c_str(),name.c_str());
+        fprintf(yyout, "%s %%%s",type.c_str(),name.c_str());
         if(i+1!=paramList.rend())fprintf(yyout, ",");
     }
     fprintf(yyout,") {\n");//paramlist
