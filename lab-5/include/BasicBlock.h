@@ -41,6 +41,7 @@ public:
     bb_iterator succ_end() { return succ.end(); };
     bb_iterator pred_begin() { return pred.begin(); };
     bb_iterator pred_end() { return pred.end(); };
+
     int getNumOfPred() const { return pred.size(); };
     int getNumOfSucc() const { return succ.size(); };
 };

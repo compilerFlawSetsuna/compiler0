@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-
+#include <vector>
 class Type;
 class Operand;
 
@@ -150,4 +150,6 @@ extern SymbolTable *identifiers;
 extern SymbolTable *globals;
 extern Type *blockType;
 extern bool ifReturn;
+typedef std::vector<IdentifierSymbolEntry*> SEList;
+extern SEList funcSEList;
 #endif

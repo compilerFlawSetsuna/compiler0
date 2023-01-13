@@ -401,11 +401,13 @@ FuncDef
     Type ID
     LPAREN RPAREN
 	{
+
         Type *funcType;
         funcType = new FunctionType($1,{});
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
+
     }
     BlockStmt
     {
@@ -420,6 +422,7 @@ FuncDef
     }
 	|
     Type ID LPAREN ParamList{
+
         Type *funcType;
 
 		std::vector<std::pair<Type*,std::string>> l = *$4;
@@ -434,7 +437,8 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
 		for(int i=0;i<(int)l.size();i++){
-			SymbolEntry *param = new IdentifierSymbolEntry(l[i].first,l[i].second,identifiers->getLevel());
+			IdentifierSymbolEntry *param = new IdentifierSymbolEntry(l[i].first,l[i].second,identifiers->getLevel());
+			funcSEList.push_back(param);
         	identifiers->install(l[i].second, param);
 		}
 
@@ -444,10 +448,10 @@ FuncDef
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);
-
         assert(se != nullptr);
         $$ = new FunctionDef(se, $7,(*$4));
-
+	dynamic_cast<FunctionDef*>($$)->seList=funcSEList;
+	funcSEList.clear();
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;

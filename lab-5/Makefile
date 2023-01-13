@@ -1,7 +1,7 @@
 SRC_PATH ?= src
 INC_PATH += include
 BUILD_PATH ?= build
-TEST_PATH ?= test/level1-1
+TEST_PATH ?= test/level1-2
 OBJ_PATH ?= $(BUILD_PATH)/obj
 BINARY ?= $(BUILD_PATH)/compiler
 SYSLIB_PATH ?= sysyruntimelibrary
@@ -53,6 +53,7 @@ run:app
 gdb:app
 	@gdb $(BINARY)
 
+
 $(OBJ_PATH)/lexer.o:$(SRC_PATH)/lexer.cpp
 	@mkdir -p $(OBJ_PATH)
 	@g++ $(CFLAGS) -c -o $@ $<
@@ -68,7 +69,7 @@ $(TEST_PATH)/%.ll:$(TEST_PATH)/%.sy
 	@[ $$? != 0 ] && echo "\033[1;31mFAIL:\033[0m $(notdir $<)" || echo "\033[1;32mSUCCESS:\033[0m $(notdir $<)"
 
 $(TEST_PATH)/%_std.ll:$(TEST_PATH)/%.sy
-	@clang -x c $< -S -m32 -emit-llvm -o $@ 
+	@clang -x c $< -S -m32 -emit-llvm -o $@
 
 llvmir:$(LLVM_IR)
 
@@ -94,16 +95,16 @@ test:app
 		timeout 5s $(BINARY) $${file} -o $${IR} -i 2>$${LOG}
 		RETURN_VALUE=$$?
 		if [ $$RETURN_VALUE = 124 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
 			continue
 		else if [ $$RETURN_VALUE != 0 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Error\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Error\033[0m"
 			continue
 			fi
 		fi
 		clang -o $${BIN} $${IR} $(SYSLIB_PATH)/sylib.c >>$${LOG} 2>&1
 		if [ $$? != 0 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
 				timeout 2s $${BIN} <$${IN} >$${RES} 2>>$${LOG}
@@ -112,25 +113,25 @@ test:app
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
-			[ $${FINAL} ] && echo "\n$${RETURN_VALUE}" >> $${RES} || echo "$${RETURN_VALUE}" >> $${RES}
+			[ $${FINAL} ] && echo -e "\n$${RETURN_VALUE}" >> $${RES} || echo -e "$${RETURN_VALUE}" >> $${RES}
 			if [ "$${RETURN_VALUE}" = "124" ]; then
-				echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mExecute Timeout\033[0m"
+				echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mExecute Timeout\033[0m"
 			else if [ "$${RETURN_VALUE}" = "127" ]; then
-				echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mExecute Error\033[0m"
+				echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mExecute Error\033[0m"
 				else
 					diff -Z $${RES} $${OUT} >/dev/null 2>&1
 					if [ $$? != 0 ]; then
-						echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mWrong Answer\033[0m"
+						echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mWrong Answer\033[0m"
 					else
 						success=$$((success + 1))
-						echo "\033[1;32mPASS:\033[0m $${FILE}"
+						echo -e "\033[1;32mPASS:\033[0m $${FILE}"
 					fi
 				fi
 			fi
 		fi
 	done
-	echo "\033[1;33mTotal: $(TESTCASE_NUM)\t\033[1;32mAccept: $${success}\t\033[1;31mFail: $$(($(TESTCASE_NUM) - $${success}))\033[0m"
-	[ $(TESTCASE_NUM) = $${success} ] && echo "\033[5;32mAll Accepted. Congratulations!\033[0m"
+	echo -e "\033[1;33mTotal: $(TESTCASE_NUM)\t\033[1;32mAccept: $${success}\t\033[1;31mFail: $$(($(TESTCASE_NUM) - $${success}))\033[0m"
+	[ $(TESTCASE_NUM) = $${success} ] && echo -e "\033[5;32mAll Accepted. Congratulations!\033[0m"
 	:
 
 clean-app:

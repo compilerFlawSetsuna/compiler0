@@ -28,7 +28,10 @@ IdentifierSymbolEntry::IdentifierSymbolEntry(Type *type, std::string name, int s
 
 std::string IdentifierSymbolEntry::toStr()
 {
+    if(scope==GLOBAL)
     return "@" + name;
+    else return "%"+name;
+
 }
 
 TemporarySymbolEntry::TemporarySymbolEntry(Type *type, int label) : SymbolEntry(type, SymbolEntry::TEMPORARY)
@@ -111,3 +114,4 @@ SymbolTable *identifiers = &t;
 SymbolTable *globals = &t;
 Type* blockType=nullptr;
 bool ifReturn=false;
+SEList funcSEList;

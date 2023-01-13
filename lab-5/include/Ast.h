@@ -13,7 +13,7 @@ class BasicBlock;
 class Instruction;
 class IRBuilder;
 class Type;
-
+bool if_in_cond=false;
 class Node
 {
 private:
@@ -278,15 +278,18 @@ public:
 class FunctionDef : public StmtNode
 {
     typedef std::vector<std::pair<Type*,std::string>> ParamList;
+    typedef std::vector<IdentifierSymbolEntry*> SEList;
 private:
     SymbolEntry *se;
     StmtNode *stmt;
     ParamList paramList;
+
 public:
     FunctionDef(SymbolEntry *se, StmtNode *stmt,ParamList pl);
     void output(int level);
     void typeCheck();
     void genCode();
+    SEList seList;
 };
 
 class Ast

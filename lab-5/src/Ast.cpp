@@ -5,7 +5,7 @@
 #include "IRBuilder.h"
 #include <string.h>
 #include "Type.h"
-
+#include <assert.h>
 extern FILE *yyout;
 int Node::counter = 0;
 IRBuilder* Node::builder = nullptr;
@@ -42,25 +42,51 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
-    
     //printf("gen FuncDef");
     Unit *unit = builder->getUnit();
-    Function *func = new Function(unit, se);
+    Function *func = new Function(unit,se);
     //printf("FunctionDef::genCode()");
     func->setParamList(paramList);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
-    
-    /*for(auto &i:paramList){
-        Operand *addr;
-        SymbolEntry *addr_se;
-        Type *type=i.first;
+
+    for(auto &param_se:seList){
+
+        Type* type=param_se->getType();
+        SymbolEntry* addr_se = new TemporarySymbolEntry(new PointerType(type), SymbolTable::getLabel());
+        Operand* addr=new Operand(addr_se);
+
+        AllocaInstruction* alloca=new AllocaInstruction(addr, new TemporarySymbolEntry(type,0));
+        entry->insertFront(alloca);
+        param_se->setAddr(addr);
+        Operand* param=new Operand(param_se);
+        new StoreInstruction(addr,param,entry);
+       // SymbolEntry* param_se=identifiers->lookup(i.second);
+       /*
+        printf("param_se:%s\n",i.second.c_str());
+        Type *type;
+        type = new PointerType(i.first);
+        printf("%s",i.second.c_str());
+        SymbolEntry* param_se = new IdentifierSymbolEntry(i.first,i.second,0);
+        Operand* param=new Operand(param_se);
+        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+        addr=new Operand(addr_se);
+        AllocaInstruction* alloca=new AllocaInstruction(addr, addr_se);
+        entry->insertFront(alloca);
+        new StoreInstruction(addr, param, entry);
+        assert(param_se);*/
+     /*   dynamic_cast<IdentifierSymbolEntry*>(param_se)->setAddr(addr);
+        Type * type = new PointerType(param_se->getType());
         addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
         addr = new Operand(addr_se);
-        printf("funcdef addr %d\n",(void*)addr);
+        AllocaInstruction* alloca = new AllocaInstruction(addr, param_se);                   // allocate space for local id in function stack.
+        entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
+        //printf("funcdef addr %d\n",(void*)addr);
         //Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
         //new LoadInstruction(dst, addr, entry);
-    }*/
+        Operand* src=new Operand(param_se);
+        new StoreInstruction(addr, src, entry);*/
+    }
     
     builder->setInsertBB(entry);
     
@@ -100,6 +126,7 @@ void BinaryExpr::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     Function *func = bb->getParent();
+    dst=new Operand(new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel()));
     if (op == AND)
     {
         BasicBlock *trueBB = new BasicBlock(func);  // if the result of lhs is true, jump to the trueBB.
@@ -124,6 +151,7 @@ void BinaryExpr::genCode()
     else if(op >= LESS && op <= EQUAL)
     {
         // Todo:Done
+        if_in_cond=false;
         expr1->genCode();
         expr2->genCode();
         Operand *src1 = expr1->getOperand();
@@ -159,6 +187,7 @@ void BinaryExpr::genCode()
         true_list.push_back(new CondBrInstruction(trueBB, endBB, dst, bb));
         false_list.push_back(new UncondBrInstruction(falseBB, endBB));
 
+
     }
     else if(op >= ADD && op <= MOD)
     {
@@ -186,6 +215,14 @@ void BinaryExpr::genCode()
             break;
         }
         new BinaryInstruction(opcode, dst, src1, src2, bb);
+     /*   if(if_in_cond==true){
+            BasicBlock *trueBB, *falseBB, *endBB;
+            trueBB = new BasicBlock(func);
+            falseBB = new BasicBlock(func);
+            endBB = new BasicBlock(func);
+            true_list.push_back(new CondBrInstruction(trueBB, endBB, dst, bb));
+            false_list.push_back(new UncondBrInstruction(falseBB, endBB));
+        }*/
     }
 }
 
@@ -246,6 +283,7 @@ void FuncUseExpr::genCode(){
         }
         param->genCode();
         paramList.push_back(param->getOperand());
+        reverse(paramList.begin(),paramList.end());
         //printf("push\n");
     }
 
@@ -265,12 +303,14 @@ void Id::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
+    //if(addr==nullptr) addr=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
     //printf("ID gencode addr %d\n",(void *)addr);
     new LoadInstruction(dst, addr, bb);
 }
 
 void IfStmt::genCode()
 {
+    if_in_cond=true;
     Function *func;
     BasicBlock *then_bb, *end_bb;
 
@@ -283,16 +323,19 @@ void IfStmt::genCode()
     backPatch(cond->falseList(), end_bb);
 
     builder->setInsertBB(then_bb);
+    if_in_cond=false;
     thenStmt->genCode();
     then_bb = builder->getInsertBB();
     new UncondBrInstruction(end_bb, then_bb);
 
     builder->setInsertBB(end_bb);
+
 }
 
 void IfElseStmt::genCode()
 {
     // Todo
+    if_in_cond=true;
     Function* func;
     BasicBlock *then_bb, *else_bb , *end_bb;
     func = builder->getInsertBB()->getParent();
@@ -303,7 +346,7 @@ void IfElseStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(),then_bb);
     backPatch(cond->falseList(),else_bb);
-
+    if_in_cond=false;
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
     then_bb = builder->getInsertBB();
@@ -315,11 +358,13 @@ void IfElseStmt::genCode()
     new UncondBrInstruction(end_bb,else_bb);
 
     builder->setInsertBB(end_bb);
+
 }
 
 void WhileStmt::genCode()
 {
     //Todo
+    if_in_cond=true;
     Function *func;
     BasicBlock *cond_bb, *loop_bb, *end_bb,*bb;
 
@@ -335,13 +380,14 @@ void WhileStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), loop_bb);
     backPatch(cond->falseList(), end_bb);
-
+    if_in_cond=false;
     builder->setInsertBB(loop_bb);
     loopStmt->genCode();
     loop_bb=builder->getInsertBB();
     new UncondBrInstruction(cond_bb, loop_bb);
 
     builder->setInsertBB(end_bb);
+
 }
 
 void CompoundStmt::genCode()
@@ -368,6 +414,7 @@ void DeclStmt::genCode()
         addr_se = new IdentifierSymbolEntry(*se);
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
+
         se->setAddr(addr);
     }
     else if(se->isLocal())
@@ -383,7 +430,10 @@ void DeclStmt::genCode()
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in
+
+
+        // code generation.
     }
 }
 
