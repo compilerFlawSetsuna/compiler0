@@ -1,13 +1,22 @@
-int main()
-{
-    int a=1;
-    int b=2;
-	int c=a+b;
-	if(a>b){
-		return 1;
-	}else{
-		return 2;
-	}
+int x=0;
+int y=1;
+int foo(){
 	return 0;
 }
-
+int main()
+{
+int a;
+int b;
+int min;
+a = 1 + 2 + 3;
+b = 2 + 3 + 4;
+int f=foo();
+if (a < b)
+{
+		int c=2;
+min = a;
+ }
+ else
+ min = b;
+ return min;
+ }

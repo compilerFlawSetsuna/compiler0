@@ -7,6 +7,7 @@
 #include <fstream>
 #include "SymbolTable.h"
 
+
 /* Hint:
 * MachineUnit: Compiler unit
 * MachineFunction: Function in assembly code 
@@ -18,6 +19,7 @@
 * You need to complete other the member function, especially "output()" ,
 * After that, you can use "output()" to print assembly code . */
 
+class Unit;
 class MachineUnit;
 class MachineFunction;
 class MachineBlock;
@@ -138,11 +140,11 @@ public:
     void output();
 };
 
-class StackMInstrcuton : public MachineInstruction
+class StackMInstruction : public MachineInstruction
 {
 public:
     enum opType { PUSH, POP };
-    StackMInstrcuton(MachineBlock* p, int op, 
+    StackMInstruction(MachineBlock* p, int op, 
                 MachineOperand* src,
                 int cond = MachineInstruction::NONE);
     void output();
@@ -201,12 +203,14 @@ class MachineUnit
 {
 private:
     std::vector<MachineFunction*> func_list;
+    Unit* parent;
     void PrintGlobalDecl();
 public:
     std::vector<MachineFunction*>& getFuncs() {return func_list;};
     std::vector<MachineFunction*>::iterator begin() { return func_list.begin(); };
     std::vector<MachineFunction*>::iterator end() { return func_list.end(); };
     void InsertFunc(MachineFunction* func) { func_list.push_back(func);};
+    void SetUnit(Unit* u){parent=u;};
     void output();
 };
 

@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
         ast.output();
     ast.typeCheck();
     ast.genCode(&unit);
-    //if(dump_ir)
+    if(dump_ir)
         unit.output();
     unit.genMachineCode(&mUnit);
     LinearScan linearScan(&mUnit);

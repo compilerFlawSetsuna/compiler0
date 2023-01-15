@@ -1,4 +1,6 @@
 #include "MachineCode.h"
+//#include "Unit.h"
+
 extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
@@ -108,10 +110,22 @@ void MachineInstruction::PrintCond()
     switch (cond)
     {
     case LT:
-        fprintf(yyout, "lt");
+        fprintf(yyout, "lt ");
         break;
     case GT:
-        fprintf(yyout, "gt");
+        fprintf(yyout, "gt ");
+        break;
+    case GE:
+        fprintf(yyout, "ge ");
+        break;
+    case LE:
+        fprintf(yyout, "le ");
+        break;
+    case EQ:
+        fprintf(yyout, "eq ");
+        break;
+    case NE:
+        fprintf(yyout, "ne ");
         break;
     default:
         break;
@@ -152,7 +166,7 @@ void BinaryMInstruction::output()
         fprintf(yyout, "\n");
         break;
     case BinaryMInstruction::SUB:
-        fprintf(yyout, "\tadd ");
+        fprintf(yyout, "\tsub ");
         this->PrintCond();
         this->def_list[0]->output();
         fprintf(yyout, ", ");
@@ -161,6 +175,47 @@ void BinaryMInstruction::output()
         this->use_list[1]->output();
         fprintf(yyout, "\n");
         break;
+    case BinaryMInstruction::AND:
+        fprintf(yyout, "\tand ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::OR:
+        fprintf(yyout, "\tor ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::MUL:
+        fprintf(yyout, "\tmul ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::DIV:
+        fprintf(yyout, "\tsdiv ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+
     default:
         break;
     }
@@ -265,11 +320,40 @@ MovMInstruction::MovMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::MOV;
+    this->op = op;
+    this->cond = cond;
+    this->def_list.push_back(dst);
+    this->use_list.push_back(src);
+    dst->setParent(this);
+    src->setParent(this);
 }
 
 void MovMInstruction::output() 
 {
     // TODO
+    switch (this->op)
+    {
+    case MovMInstruction::MOV:
+        fprintf(yyout, "\tmov ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+    case MovMInstruction::MVN:
+        fprintf(yyout, "\tmvn ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+    default:
+        break;
+    }
 }
 
 BranchMInstruction::BranchMInstruction(MachineBlock* p, int op, 
@@ -277,11 +361,34 @@ BranchMInstruction::BranchMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::MOV;
+    this->op = op;
+    this->cond = cond;
+    this->def_list.push_back(dst);
+    dst->setParent(this);
 }
 
 void BranchMInstruction::output()
 {
     // TODO
+    switch (this->op)
+    {
+    case BranchMInstruction::B:
+        fprintf(yyout, "\tb");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BranchMInstruction::BX:
+        fprintf(yyout, "\tbx ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+    default:
+        break;
+    }
 }
 
 CmpMInstruction::CmpMInstruction(MachineBlock* p, 
@@ -289,6 +396,14 @@ CmpMInstruction::CmpMInstruction(MachineBlock* p,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::CMP;
+    this->op = op;
+    this->cond = cond;
+    this->use_list.push_back(src1);
+    this->use_list.push_back(src2);
+    src1->setParent(this);
+    src2->setParent(this);
 }
 
 void CmpMInstruction::output()
@@ -296,18 +411,50 @@ void CmpMInstruction::output()
     // TODO
     // Jsut for reg alloca test
     // delete it after test
+    fprintf(yyout, "\tcmp ");
+    this->PrintCond();
+    this->use_list[0]->output();
+    fprintf(yyout, ", ");
+    this->use_list[1]->output();
+    fprintf(yyout, "\n");
 }
 
-StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, 
+StackMInstruction::StackMInstruction(MachineBlock* p, int op, 
     MachineOperand* src,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::STACK;
+    this->op = op;
+    this->cond = cond;
+    this->use_list.push_back(src);
+    src->setParent(this);
 }
 
-void StackMInstrcuton::output()
+void StackMInstruction::output()
 {
     // TODO
+    switch(this->op)
+    {
+    case StackMInstruction::PUSH:
+        fprintf(yyout, "\tpush ");
+        
+        this->PrintCond();
+        fprintf(yyout, "{");
+        this->use_list[0]->output();
+        fprintf(yyout, "}");
+        fprintf(yyout, "\n");
+        break;
+    case StackMInstruction::POP:
+        fprintf(yyout, "\tpop ");
+        this->PrintCond();
+        fprintf(yyout, "{");
+        this->use_list[0]->output();
+        fprintf(yyout, "}");
+        fprintf(yyout, "\n");
+        break;
+    }
 }
 
 MachineFunction::MachineFunction(MachineUnit* p, SymbolEntry* sym_ptr) 
@@ -339,7 +486,9 @@ void MachineFunction::output()
     *  2. fp = sp
     *  3. Save callee saved register
     *  4. Allocate stack space for local variable */
-    
+    fprintf(yyout,"push {fp}\n");
+    fprintf(yyout,"mov fp, sp\n");
+    fprintf(yyout,"sub sp, sp, #%d\n",stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)
         iter->output();
@@ -349,6 +498,9 @@ void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
     // You need to print global variable/const declarition code;
+
+    return;
+
 }
 
 void MachineUnit::output()

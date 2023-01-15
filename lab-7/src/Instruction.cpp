@@ -680,6 +680,37 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     * 1. Generate mov instruction to save return value in r0
     * 2. Restore callee saved registers and sp, fp
     * 3. Generate bx instruction */
+    auto cur_block = builder->getBlock();
+    MachineInstruction* cur_inst = nullptr;
+    if(!operands.empty()){
+
+        auto dst = genMachineReg(0);
+        auto src = genMachineOperand(operands[0]);
+        if (src->isImm()) {
+            if ((((ConstantSymbolEntry*)(operands[0]->getEntry()))->getValue() >255) ) {
+                auto r0 = genMachineReg(0);
+                cur_block->InsertInst(new LoadMInstruction(cur_block, r0, src));
+                src = r0;
+            }
+        }
+        //printf("!!!");
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,src);
+        cur_block->InsertInst(cur_inst); 
+    }
+
+    auto cur_func = builder->getFunction();
+    auto sp = genMachineReg(13);
+    auto size =new MachineOperand(MachineOperand::IMM, cur_func->AllocSpace(0));
+    cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD,sp, sp, size);
+    cur_block->InsertInst(cur_inst);
+
+    auto fp = genMachineReg(11);
+    cur_inst = new StackMInstruction(cur_block, 0,fp);
+    cur_block->InsertInst(cur_inst);
+
+    auto lr = genMachineReg(14);
+    cur_inst =new BranchMInstruction(cur_block, BranchMInstruction::BX, lr);
+    cur_block->InsertInst(cur_inst);
 }
 
 
@@ -690,4 +721,8 @@ void CallInstruction::genMachineCode(AsmBuilder* builder)
     * 1. Generate mov instruction to save return value in r0
     * 2. Restore callee saved registers and sp, fp
     * 3. Generate bx instruction */
+    /*
+    MachineInstruction* cur_inst = nullptr;
+    auto label = new MachineOperand(func->toStr().c_str());
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);*/
 }
