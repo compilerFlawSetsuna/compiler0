@@ -136,11 +136,11 @@ public:
     void output();
 };
 
-class StackMInstrcuton : public MachineInstruction
+class StackMInstruction : public MachineInstruction
 {
 public:
     enum opType { PUSH, POP };
-    StackMInstrcuton(MachineBlock* p, int op, 
+    StackMInstruction(MachineBlock* p, int op, 
                 MachineOperand* src,
                 int cond = MachineInstruction::NONE);
     void output();
