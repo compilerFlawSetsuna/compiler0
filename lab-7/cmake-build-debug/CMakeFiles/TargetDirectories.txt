@@ -1,0 +1,3 @@
+/home/setsuna/Desktop/compiler0/lab-7/cmake-build-debug/CMakeFiles/lab_7.dir
+/home/setsuna/Desktop/compiler0/lab-7/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/setsuna/Desktop/compiler0/lab-7/cmake-build-debug/CMakeFiles/rebuild_cache.dir

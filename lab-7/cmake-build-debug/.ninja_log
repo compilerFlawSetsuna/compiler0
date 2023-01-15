@@ -1,0 +1,15 @@
+# ninja log v5
+1	334	1673798647984715640	CMakeFiles/lab_7.dir/src/Operand.cpp.o	fffea1e67da46ada
+1	423	1673798648071381831	CMakeFiles/lab_7.dir/src/Type.cpp.o	f41cbd30900178cd
+423	474	1673798648124714872	CMakeFiles/lab_7.dir/sysyruntimelibrary/sylib.c.o	a4108ddfa346c77
+1	579	1673798648228047638	CMakeFiles/lab_7.dir/src/main.cpp.o	68f024ae47a831af
+1	667	1673798648314713829	CMakeFiles/lab_7.dir/src/MachineCode.cpp.o	84a20e01b8c11eb7
+1	677	1673798648324713774	CMakeFiles/lab_7.dir/src/SymbolTable.cpp.o	400239eac48d52d9
+1	682	1673798648331380404	CMakeFiles/lab_7.dir/src/Instruction.cpp.o	d6f7286299c14e45
+2	795	1673798648444713116	CMakeFiles/lab_7.dir/src/Unit.cpp.o	48c5e30b351ca7e4
+0	811	1673798648461379691	CMakeFiles/lab_7.dir/src/BasicBlock.cpp.o	2c4256484f9aaa09
+1	891	1673798648541379252	CMakeFiles/lab_7.dir/src/LiveVariableAnalysis.cpp.o	ac33ada2de3b8426
+0	926	1673798648574712402	CMakeFiles/lab_7.dir/src/Function.cpp.o	4b930952c7fe53d5
+1	967	1673798648614712183	CMakeFiles/lab_7.dir/src/LinearScan.cpp.o	50eaebc8d6747b6
+335	1078	1673798648728044894	CMakeFiles/lab_7.dir/src/parser.cpp.o	170d3e6341e09088
+0	1109	1673798648758044730	CMakeFiles/lab_7.dir/src/Ast.cpp.o	f6941b49328ee0e9

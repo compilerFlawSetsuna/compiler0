@@ -91,7 +91,17 @@ void MachineOperand::output()
         break;
     }
 }
+void MachineInstruction::insertBefore(MachineInstruction *inst) {
+    auto& instructions = parent->getInsts();
+    auto it = std::find(instructions.begin(), instructions.end(), this);
+    instructions.insert(it, inst);
+}
 
+void MachineInstruction::insertAfter(MachineInstruction *inst) {
+    auto& instructions = parent->getInsts();
+    auto it = std::find(instructions.begin(), instructions.end(), this);
+    instructions.insert(++it, inst);
+}
 void MachineInstruction::PrintCond()
 {
     // TODO

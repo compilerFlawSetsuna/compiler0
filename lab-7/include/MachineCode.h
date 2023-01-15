@@ -75,6 +75,8 @@ public:
     std::vector<MachineOperand*>& getDef() {return def_list;};
     std::vector<MachineOperand*>& getUse() {return use_list;};
     MachineBlock* getParent(){return parent;}
+    void insertBefore(MachineInstruction*);
+    void insertAfter(MachineInstruction*);
 };
 
 class BinaryMInstruction : public MachineInstruction

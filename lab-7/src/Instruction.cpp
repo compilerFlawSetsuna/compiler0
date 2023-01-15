@@ -466,7 +466,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     if(operands[0]->getEntry()->isVariable()
     && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())
     {
-        printf("case 1");
+        //printf("case 1");
         auto dst = genMachineOperand(operands[0]);
         auto internal_reg1 = genMachineVReg();
         auto internal_reg2 = new MachineOperand(*internal_reg1);
@@ -483,7 +483,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     && operands[0]->getDef()
     && operands[0]->getDef()->isAlloc())
     {
-        printf("case 2");
+        //printf("case 2");
         // example: store r1, [r0, #4]
         auto src = genMachineOperand(operands[1]);
         auto dst1 = genMachineReg(11);
@@ -494,7 +494,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     // Load operand from temporary variable
     else
     {
-        printf("case 3");
+        //printf("case 3");
         // example: store r1, [r0]
         auto dst = genMachineOperand(operands[0]);
         auto src = genMachineOperand(operands[1]);
