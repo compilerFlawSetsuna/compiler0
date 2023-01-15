@@ -721,4 +721,8 @@ void CallInstruction::genMachineCode(AsmBuilder* builder)
     * 1. Generate mov instruction to save return value in r0
     * 2. Restore callee saved registers and sp, fp
     * 3. Generate bx instruction */
+    /*
+    MachineInstruction* cur_inst = nullptr;
+    auto label = new MachineOperand(func->toStr().c_str());
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);*/
 }

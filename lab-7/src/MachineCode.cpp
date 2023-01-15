@@ -1,4 +1,6 @@
 #include "MachineCode.h"
+//#include "Unit.h"
+
 extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
@@ -474,7 +476,9 @@ void MachineFunction::output()
     *  2. fp = sp
     *  3. Save callee saved register
     *  4. Allocate stack space for local variable */
-    
+    fprintf(yyout,"push {fp}\n");
+    fprintf(yyout,"mov fp, sp\n");
+    fprintf(yyout,"sub sp, sp, #%d\n",stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)
         iter->output();
@@ -484,6 +488,9 @@ void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
     // You need to print global variable/const declarition code;
+
+    return;
+
 }
 
 void MachineUnit::output()
