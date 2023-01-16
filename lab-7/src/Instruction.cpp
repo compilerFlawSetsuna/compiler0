@@ -713,11 +713,15 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD,sp, sp, size);
     cur_block->InsertInst(cur_inst);
 
+    auto lr = genMachineReg(14);
+    cur_inst = new StackMInstruction(cur_block, StackMInstruction::POP,lr);
+    cur_block->InsertInst(cur_inst);
+
     auto fp = genMachineReg(11);
     cur_inst = new StackMInstruction(cur_block, StackMInstruction::POP,fp);
     cur_block->InsertInst(cur_inst);
 
-    auto lr = genMachineReg(14);
+    lr = genMachineReg(14);
     cur_inst =new BranchMInstruction(cur_block, BranchMInstruction::BX, lr);
     cur_block->InsertInst(cur_inst);
 }

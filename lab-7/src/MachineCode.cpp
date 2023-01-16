@@ -88,7 +88,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+            fprintf(yyout, "%s", this->label.c_str());
     default:
         break;
     }
@@ -497,7 +497,9 @@ void MachineFunction::output()
     *  4. Allocate stack space for local variable */
 
     fprintf(yyout,"push {fp}\n");
+    fprintf(yyout,"push {lr}\n");
     fprintf(yyout,"mov fp, sp\n");
+    fprintf(yyout,"sub sp, sp, #%d\n",stack_size);
     for(int i=0;i<param_num&&i<4;i++){//pass the param
         fprintf(yyout,"str r%d, [fp, #-%d]\n",i,stack_size-(param_num-i-1)*4);
     }
@@ -507,7 +509,6 @@ void MachineFunction::output()
         fprintf(yyout,"str r%d, [fp, #-%d]\n",i,stack_size-(param_num-i-1)*4);
     }
     }
-    fprintf(yyout,"sub sp, sp, #%d\n",stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)
         iter->output();
