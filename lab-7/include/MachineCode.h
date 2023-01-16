@@ -183,6 +183,7 @@ private:
     int stack_size;
     std::set<int> saved_regs;
     SymbolEntry* sym_ptr;
+    int param_num;
 public:
     std::vector<MachineBlock*>& getBlocks() {return block_list;};
     std::vector<MachineBlock*>::iterator begin() { return block_list.begin(); };

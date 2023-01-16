@@ -42,11 +42,6 @@ void Unit::output() const
 
 void Unit::genMachineCode(MachineUnit* munit) 
 {
-    //munit->SetUnit(this);
-    /*for (auto &v : global_list)
-    {
-        munit->insertGlobal(v);
-    }*/
     AsmBuilder* builder = new AsmBuilder();
     builder->setUnit(munit);
     for (auto &func : func_list)

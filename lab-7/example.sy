@@ -1,7 +1,12 @@
-//test add
+int foo(int a,int b,int c,int d,int e,int f){
+	int x=d;
+	int y=1;
+	return x;
+}
 int main(){
     int a, b;
     a = 10;
     b = -1;
+	int c = foo(a,b,0,0,0,0);
     return a + b;
 }

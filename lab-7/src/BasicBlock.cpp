@@ -73,6 +73,7 @@ void BasicBlock::removePred(BasicBlock *bb)
 
 void BasicBlock::genMachineCode(AsmBuilder* builder) 
 {
+    //printf("genBlock");
     auto cur_func = builder->getFunction();
     auto cur_block = new MachineBlock(cur_func, no);
     builder->setBlock(cur_block);

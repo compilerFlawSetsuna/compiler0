@@ -60,7 +60,8 @@ void FunctionDef::genCode()
         entry->insertFront(alloca);
         param_se->setAddr(addr);
         Operand* param=new Operand(param_se);
-        new StoreInstruction(addr,param,entry);
+        //new StoreInstruction(addr,param,entry);
+        //BUG FIX
        // SymbolEntry* param_se=identifiers->lookup(i.second);
        /*
         printf("param_se:%s\n",i.second.c_str());

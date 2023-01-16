@@ -1,5 +1,5 @@
 #include "MachineCode.h"
-//#include "Unit.h"
+#include "Type.h"
 
 extern FILE* yyout;
 
@@ -88,7 +88,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+            fprintf(yyout, "%s", this->label.c_str());
     default:
         break;
     }
@@ -387,6 +387,12 @@ void BranchMInstruction::output()
         this->def_list[0]->output();
         fprintf(yyout, "\n");
         break;
+    case BranchMInstruction::BL:
+        fprintf(yyout, "\tbl ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
     default:
         break;
     }
@@ -463,6 +469,7 @@ MachineFunction::MachineFunction(MachineUnit* p, SymbolEntry* sym_ptr)
     this->parent = p; 
     this->sym_ptr = sym_ptr; 
     this->stack_size = 0;
+    param_num=(dynamic_cast<FunctionType*>(sym_ptr->getType()))->getParamsType().size();
 };
 
 void MachineBlock::output()
@@ -487,8 +494,18 @@ void MachineFunction::output()
     *  2. fp = sp
     *  3. Save callee saved register
     *  4. Allocate stack space for local variable */
+
     fprintf(yyout,"push {fp}\n");
     fprintf(yyout,"mov fp, sp\n");
+    for(int i=0;i<param_num&&i<4;i++){//pass the param
+        fprintf(yyout,"str r%d, [fp, #-%d]\n",i,stack_size-(param_num-i-1)*4);
+    }
+    if(param_num>4){
+        for(int i=4;i<param_num;i++){//pass the param
+        fprintf(yyout,"ldr r0, [fp, #%d]\n",(param_num-i-1)*4);
+        fprintf(yyout,"str r%d, [fp, #-%d]\n",i,stack_size-(param_num-i-1)*4);
+    }
+    }
     fprintf(yyout,"sub sp, sp, #%d\n",stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)

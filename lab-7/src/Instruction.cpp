@@ -407,6 +407,7 @@ MachineOperand* Instruction::genMachineLabel(int block_no)
 
 void AllocaInstruction::genMachineCode(AsmBuilder* builder)
 {
+    //printf("genAlloca");
     /* HINT:
     * Allocate stack space for local variabel
     * Store frame offset in symbol entry */
@@ -464,6 +465,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     MachineInstruction* cur_inst = nullptr;
     // Store global operand
     auto src = genMachineOperand(operands[1]);
+
     if(src->isImm())
     {
         auto internal_reg = genMachineVReg();
@@ -507,6 +509,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
         cur_inst = new StoreMInstruction(cur_block, src, dst);
         cur_block->InsertInst(cur_inst);
     }
+    //printf("genStoreDone");
 }
 
 void BinaryInstruction::genMachineCode(AsmBuilder* builder)
@@ -711,7 +714,7 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     cur_block->InsertInst(cur_inst);
 
     auto fp = genMachineReg(11);
-    cur_inst = new StackMInstruction(cur_block, 0,fp);
+    cur_inst = new StackMInstruction(cur_block, StackMInstruction::POP,fp);
     cur_block->InsertInst(cur_inst);
 
     auto lr = genMachineReg(14);
@@ -723,12 +726,35 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
 void CallInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO
-    /* HINT:
-    * 1. Generate mov instruction to save return value in r0
-    * 2. Restore callee saved registers and sp, fp
-    * 3. Generate bx instruction */
-    /*
+    auto cur_block = builder->getBlock();
     MachineInstruction* cur_inst = nullptr;
-    auto label = new MachineOperand(func->toStr().c_str());
-    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);*/
+    int param_num = operands.size()-1;
+    auto dst_op=operands[0];
+    for(int i=0;i<param_num&&i<4;i++){//pass the param
+        auto r = genMachineReg(i);
+        auto param =  genMachineOperand(operands[i+1]);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, r,param);
+        cur_block->InsertInst(cur_inst); 
+    }    
+    for(int i=4;i<param_num;i++){
+        auto param =  genMachineOperand(operands[i+1]);
+        cur_inst = new StackMInstruction(cur_block, StackMInstruction::PUSH, param);
+        cur_block->InsertInst(cur_inst); 
+    }
+
+    auto label = new MachineOperand(func->toStr().c_str()+1);
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);
+    cur_block->InsertInst(cur_inst);
+
+    auto sp = genMachineReg(13);//restore the stack
+    auto size =new MachineOperand(MachineOperand::IMM, std::max(param_num-4,0)*4);
+    cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD,sp, sp, size);
+    cur_block->InsertInst(cur_inst);
+    if(dst_op){
+        auto dst = genMachineOperand (dst_op);
+        auto r0 = genMachineReg(0);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,r0);
+        cur_block->InsertInst(cur_inst); 
+    }
+
 }
