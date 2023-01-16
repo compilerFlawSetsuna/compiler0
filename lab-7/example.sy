@@ -1,22 +1,7 @@
-int x=0;
-int y=1;
-int foo(){
-	return 0;
+//test add
+int main(){
+    int a, b;
+    a = 10;
+    b = -1;
+    return a + b;
 }
-int main()
-{
-int a;
-int b;
-int min;
-a = 1 + 2 + 3;
-b = 2 + 3 + 4;
-int f=foo();
-if (a < b)
-{
-		int c=2;
-min = a;
- }
- else
- min = b;
- return min;
- }

@@ -277,7 +277,8 @@ StoreMInstruction::StoreMInstruction(MachineBlock* p,
     this->type = MachineInstruction::STORE;
     this->op = -1;
     this->cond = cond;
-    this->def_list.push_back(src1);
+    //this->def_list.push_back(src2);
+    this->use_list.push_back(src1);
     this->use_list.push_back(src2);
     if (src3)
         this->use_list.push_back(src3);
@@ -291,26 +292,26 @@ void StoreMInstruction::output()
 {
     // TODO
     fprintf(yyout, "\tstr ");
-    this->def_list[0]->output();
+    this->use_list[0]->output();
     fprintf(yyout, ", ");
 
-    if(this->use_list[0]->isImm())
+    if(this->use_list[1]->isImm())
     {
         fprintf(yyout, "=%d\n", this->use_list[0]->getVal());
         return;
     }
 
-    if(this->use_list[0]->isReg()||this->use_list[0]->isVReg())
+    if(this->use_list[1]->isReg()||this->use_list[1]->isVReg())
         fprintf(yyout, "[");
 
-    this->use_list[0]->output();
-    if( this->use_list.size() > 1 )
+    this->use_list[1]->output();
+    if( this->use_list.size() > 2 )
     {
         fprintf(yyout, ", ");
-        this->use_list[1]->output();
+        this->use_list[2]->output();
     }
 
-    if(this->use_list[0]->isReg()||this->use_list[0]->isVReg())
+    if(this->use_list[1]->isReg()||this->use_list[1]->isVReg())
         fprintf(yyout, "]");
     fprintf(yyout, "\n");
 }
