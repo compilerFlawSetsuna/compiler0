@@ -88,7 +88,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "%s", this->label.c_str());
+            fprintf(yyout, "addr_%s", this->label.c_str());
     default:
         break;
     }
@@ -378,6 +378,7 @@ void BranchMInstruction::output()
     case BranchMInstruction::B:
         fprintf(yyout, "\tb");
         this->PrintCond();
+        fprintf(yyout, " ");
         this->def_list[0]->output();
         fprintf(yyout, "\n");
         break;
