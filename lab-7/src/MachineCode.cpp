@@ -88,7 +88,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+            fprintf(yyout, "addr_%s0", this->label.c_str()+1);
     default:
         break;
     }
@@ -477,6 +477,7 @@ void MachineBlock::output()
 void MachineFunction::output()
 {
     //printf("!!!\n");
+    fprintf(yyout,"\t.text\n");
     const char *func_name = this->sym_ptr->toStr().c_str() + 1;
     fprintf(yyout, "\t.global %s\n", func_name);
     fprintf(yyout, "\t.type %s , %%function\n", func_name);
@@ -499,11 +500,28 @@ void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
     // You need to print global variable/const declarition code;
+    if(!global_list.empty())fprintf(yyout, "\t.data\n");
+    for(auto iter : global_list)
+    {
+        fprintf(yyout, "\t.global %s\n", iter->getName().c_str());
 
+        fprintf(yyout, "\t.align 4\n");
+        fprintf(yyout, "\t.size %s, 4\n", iter->getName().c_str());
+        fprintf(yyout, "%s:\n", iter->getName().c_str());
+        fprintf(yyout, "\t.word %d\n",iter->getValue());
+    }
     return;
 
 }
+void MachineUnit::insertGlobal(IdentifierSymbolEntry *se)
+{
+    global_list.push_back(se);
+}
 
+void MachineUnit::removeGlobal(IdentifierSymbolEntry *se)
+{
+    global_list.erase(std::find(global_list.begin(), global_list.end(), se));
+}
 void MachineUnit::output()
 {
     // TODO
@@ -518,4 +536,13 @@ void MachineUnit::output()
     //printf("!!!\n");
     for(auto iter : func_list)
         iter->output();
+    printGlobal();
+}
+void MachineUnit::printGlobal(){
+    //int n=0;
+    for (auto s : global_list) {
+        IdentifierSymbolEntry* se = (IdentifierSymbolEntry*)s;
+        fprintf(yyout, "addr_%s0:\n", se->toStr().c_str()+1);
+        fprintf(yyout, "\t.word %s\n", se->toStr().c_str()+1);
+    }
 }

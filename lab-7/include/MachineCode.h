@@ -181,9 +181,10 @@ private:
     MachineUnit* parent;
     std::vector<MachineBlock*> block_list;
     int stack_size;
-    std::set<int> saved_regs;
+
     SymbolEntry* sym_ptr;
 public:
+    std::set<int> saved_regs;
     std::vector<MachineBlock*>& getBlocks() {return block_list;};
     std::vector<MachineBlock*>::iterator begin() { return block_list.begin(); };
     std::vector<MachineBlock*>::iterator end() { return block_list.end(); };
@@ -203,6 +204,7 @@ class MachineUnit
 {
 private:
     std::vector<MachineFunction*> func_list;
+    std::vector<IdentifierSymbolEntry* > global_list;
     Unit* parent;
     void PrintGlobalDecl();
 public:
@@ -212,6 +214,10 @@ public:
     void InsertFunc(MachineFunction* func) { func_list.push_back(func);};
     void SetUnit(Unit* u){parent=u;};
     void output();
+    void insertGlobal(IdentifierSymbolEntry *);
+    void removeGlobal(IdentifierSymbolEntry *);
+
+    void printGlobal();
 };
 
 #endif

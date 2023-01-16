@@ -711,7 +711,7 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     cur_block->InsertInst(cur_inst);
 
     auto fp = genMachineReg(11);
-    cur_inst = new StackMInstruction(cur_block, 0,fp);
+    cur_inst = new StackMInstruction(cur_block, 1,fp);
     cur_block->InsertInst(cur_inst);
 
     auto lr = genMachineReg(14);
