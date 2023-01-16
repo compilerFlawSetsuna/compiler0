@@ -463,6 +463,15 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     auto cur_block = builder->getBlock();
     MachineInstruction* cur_inst = nullptr;
     // Store global operand
+    auto src = genMachineOperand(operands[1]);
+    if(src->isImm())
+    {
+        auto internal_reg = genMachineVReg();
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src);
+        cur_block->InsertInst(cur_inst);
+        src = new MachineOperand(*internal_reg);
+    }
+
     if(operands[0]->getEntry()->isVariable()
     && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())
     {
@@ -470,7 +479,6 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
         auto dst = genMachineOperand(operands[0]);
         auto internal_reg1 = genMachineVReg();
         auto internal_reg2 = new MachineOperand(*internal_reg1);
-        auto src = genMachineOperand(operands[1]);
         // example: load r0,addr_a
         cur_inst = new LoadMInstruction(cur_block, internal_reg1,dst);
         cur_block->InsertInst(cur_inst);
@@ -485,7 +493,6 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     {
         //printf("case 2");
         // example: store r1, [r0, #4]
-        auto src = genMachineOperand(operands[1]);
         auto dst1 = genMachineReg(11);
         auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());
         cur_inst = new StoreMInstruction(cur_block, src, dst1, dst2);
@@ -497,7 +504,6 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
         //printf("case 3");
         // example: store r1, [r0]
         auto dst = genMachineOperand(operands[0]);
-        auto src = genMachineOperand(operands[1]);
         cur_inst = new StoreMInstruction(cur_block, src, dst);
         cur_block->InsertInst(cur_inst);
     }
